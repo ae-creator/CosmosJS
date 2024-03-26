@@ -1,8 +1,9 @@
 import { ConfigService } from '@config/config';
-import { Env, IocContainer } from 'src';
+import { Environment, IocContainer } from 'src';
 import type { IBootstrapConfig } from '../interfaces';
 
 //TODO: add app exception handler
+// TODO: refacto this file later (used in this state for developpement purpose)
 async function loadModule(importedModule: any) {
   try {
     const module = await importedModule();
@@ -11,12 +12,11 @@ async function loadModule(importedModule: any) {
     throw new Error(`Error loading module ${importedModule}: ${error?.message}`);
   }
 }
-// TODO: refacto this file later
 export async function defineConfigAndBootstrapApp(config: (injectedConfig: ConfigService) => IBootstrapConfig): Promise<{
   port: number;
   fetch: any;
 } | void> {
-  const env = IocContainer.container.get<Env>(Env);
+  const env = IocContainer.container.get<Environment>(Environment);
   const configService = IocContainer.container.get<ConfigService>(ConfigService);
   const loadedConfig = config(configService);
   const iocBindingLoader = await loadModule(loadedConfig.loaders.ioc);
